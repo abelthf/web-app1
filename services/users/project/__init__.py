@@ -1,5 +1,6 @@
 # services/users/project/__init__.py
 
+import os  # nuevo
 
 from flask import Flask, jsonify
 from flask_restful import Resource, Api
@@ -12,7 +13,8 @@ api = Api(app)
 
 
 # estableciendo configuración
-app.config.from_object("project.config.DevelopmentConfig")  # nuevo
+app_settings = os.getenv("APP_SETTINGS")  # nuevo
+app.config.from_object(app_settings)  # nuevo
 
 
 class UsersPing(Resource):
