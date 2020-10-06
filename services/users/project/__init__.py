@@ -1,43 +1,37 @@
 # services/users/project/__init__.py
 
-import os  # nuevo
 
-from flask import Flask, jsonify
-from flask_restful import Resource, Api
-from flask_sqlalchemy import SQLAlchemy  # nuevo
+import os
 
-
-# instanciado la app
-app = Flask(__name__)
-
-api = Api(app)
+from flask import Flask  # nuevo
+from flask_sqlalchemy import SQLAlchemy
 
 
-# estableciendo configuración
-app_settings = os.getenv("APP_SETTINGS")  # nuevo
-app.config.from_object(app_settings)  # nuevo
+# instanciando la db
+db = SQLAlchemy()
 
 
-# incializando la db
-db = SQLAlchemy(app)  # nuevo
+# new
+def create_app(script_info=None):
 
+    # instanciando la app
+    app = Flask(__name__)
 
-# modelo
-class User(db.Model):  # nuevo
-    __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(128), nullable=False)
-    email = db.Column(db.String(128), nullable=False)
-    active = db.Column(db.Boolean(), default=True, nullable=False)
+    # estableciendo la configuración
+    app_settings = os.getenv("APP_SETTINGS")
+    app.config.from_object(app_settings)
 
-    def __init__(self, username, email):
-        self.username = username
-        self.email = email
+    # preparando la extensión
+    db.init_app(app)
 
+    # registrar blueprints
+    from project.api.users import users_blueprint
 
-class UsersPing(Resource):
-    def get(self):
-        return {"status": "success", "message": "pong!"}
+    app.register_blueprint(users_blueprint)
 
+    # contexto shell para flask cli
+    @app.shell_context_processor
+    def ctx():
+        return {"app": app, "db": db}
 
-api.add_resource(UsersPing, "/users/ping")
+    return app

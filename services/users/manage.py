@@ -1,18 +1,18 @@
 # services/users/manage.py
 
+
 import sys
 import unittest
 
 from flask.cli import FlaskGroup
 
-from project import app, db  # nuevo
+from project import create_app, db  # nuevo
+from project.api.models import User  # nuevo
 
-from project import app
+app = create_app()  # nuevo
+cli = FlaskGroup(create_app=create_app)  # nuevo
 
 
-cli = FlaskGroup(app)
-
-# nuevo
 @cli.command("recreate_db")
 def recreate_db():
     db.drop_all()
@@ -22,8 +22,7 @@ def recreate_db():
 
 @cli.command()
 def test():
-
-    """Ejecuta los tests sin  code coverage."""
+    """Ejecutar los tests sin code coverage"""
     tests = unittest.TestLoader().discover("project/tests", pattern="test*.py")
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     if result.wasSuccessful():
