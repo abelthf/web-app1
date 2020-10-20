@@ -1,17 +1,15 @@
 # services/users/project/tests/test_config.py
 
+from flask_testing import TestCase
+from flask import current_app
 from project import create_app
-
-
 import os
 import unittest
 
-from flask import current_app
-from flask_testing import TestCase
+app = create_app()
+
 
 # from project import app
-
-app = create_app()
 
 
 class TestDevelopmentConfig(TestCase):
@@ -26,6 +24,7 @@ class TestDevelopmentConfig(TestCase):
             app.config["SQLALCHEMY_DATABASE_URI"] == os.environ.get(
                 "DATABASE_URL")
         )
+        self.assertTrue(app.config['DEBUG_TB_ENABLED'])  # nuevo
 
 
 class TestTestingConfig(TestCase):
@@ -41,6 +40,7 @@ class TestTestingConfig(TestCase):
             app.config["SQLALCHEMY_DATABASE_URI"] == os.environ.get(
                 "DATABASE_TEST_URL")
         )
+        self.assertFalse(app.config['DEBUG_TB_ENABLED'])  # nuevo
 
 
 class TestProductionConfig(TestCase):
@@ -51,6 +51,7 @@ class TestProductionConfig(TestCase):
     def test_app_is_production(self):
         self.assertTrue(app.config["SECRET_KEY"] == "my_key")
         self.assertFalse(app.config["TESTING"])
+        self.assertFalse(app.config['DEBUG_TB_ENABLED'])  # nuevo
 
 
 if __name__ == "__main__":
