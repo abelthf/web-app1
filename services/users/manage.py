@@ -2,25 +2,26 @@
 
 import sys
 import unittest
-import coverage
 
+import coverage
 from flask.cli import FlaskGroup
 
-from project import create_app, db  # nuevo
-from project.api.models import User  # nuevo
+from project import create_app, db
+from project.api.models import User
+
 
 COV = coverage.coverage(
     branch=True,
-    include='project/*',
+    include="project/*",
     omit=[
-        'project/tests/*',
-        'project/config.py',
-    ]
+        "project/tests/*",
+        "project/config.py",
+    ],
 )
 COV.start()
 
-app = create_app()  # nuevo
-cli = FlaskGroup(create_app=create_app)  # nuevo
+app = create_app()
+cli = FlaskGroup(create_app=create_app)
 
 
 @cli.command("recreate_db")
@@ -40,7 +41,7 @@ def test():
     sys.exit(result)
 
 
-@cli.command('seed_db')
+@cli.command("seed_db")
 def seed_db():
     """Sembrar la base de datos"""
     db.session.add(User(username='abel.huanca',
@@ -52,12 +53,12 @@ def seed_db():
 @cli.command()
 def cov():
     """Runs the unit tests with coverage."""
-    tests = unittest.TestLoader().discover('project/tests')
+    tests = unittest.TestLoader().discover("project/tests")
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     if result.wasSuccessful():
         COV.stop()
         COV.save()
-        print('Coverage Summary:')
+        print("Coverage Summary:")
         COV.report()
         COV.html_report()
         COV.erase()
