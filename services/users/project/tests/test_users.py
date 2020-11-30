@@ -8,17 +8,19 @@ from project.tests.base import BaseTestCase
 
 from project import db
 from project.api.models import User
+from project.tests.utils import add_user
 
 """
 funcion de ayuda para agaregar usuarios.
 """
 
-
+"""
 def add_user(username, email):  # nuevo
     user = User(username=username, email=email)
     db.session.add(user)
     db.session.commit()
     return user
+"""
 
 
 class TestUserService(BaseTestCase):
@@ -101,7 +103,7 @@ class TestUserService(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 400)
-            self.assertIn("Sorry That email already exists.", data["message"])
+            self.assertIn("Sorry. That email already exists.", data["message"])
             self.assertIn("fail", data["status"])
 
     def test_single_user(self):
